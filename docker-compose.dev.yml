@@ -1,0 +1,14 @@
+version: '2.2'
+
+services:
+    bemodule:
+      container_name: budgetcontrol-ms-name
+      image: budgetcontrol/core:xdebug-v2.2
+      ports:
+        - "8084:80" # Change port do container
+      restart: unless-stopped
+
+networks:
+  budgetcontrol_network:
+    external: false
+    name: budgetcontrol_network
