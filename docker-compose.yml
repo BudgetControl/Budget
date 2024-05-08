@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
     bemodule:
-      container_name: budgetcontrol-ms-name
+      container_name: budgetcontrol-ms-budget
       image: budgetcontrol/core:v2.2
       volumes:
         - ./:/var/www/workdir

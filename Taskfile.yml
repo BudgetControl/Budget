@@ -6,8 +6,8 @@ tasks:
     desc: Build dev enviroment
     cmds:
       - docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-      - docker container cp bin/apache/default.conf budgetcontrol-ms-name:/etc/apache2/sites-available/budgetcontrol.cloud.conf
-      - docker container exec budgetcontrol-ms-name service apache2 restart
+      - docker container cp bin/apache/default.conf budgetcontrol-ms-budget:/etc/apache2/sites-available/budgetcontrol.cloud.conf
+      - docker container exec budgetcontrol-ms-budget service apache2 restart
   run:db:
     desc: Run database
     cmds:
