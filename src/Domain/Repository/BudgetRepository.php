@@ -1,7 +1,7 @@
 <?php
 namespace Budgetcontrol\Budget\Domain\Repository;
 
-use Budgetcontrol\jobs\Domain\Model\Budget;
+use Budgetcontrol\Budget\Domain\Model\Budget;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class BudgetRepository extends Repository {

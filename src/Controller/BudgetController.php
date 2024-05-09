@@ -3,7 +3,7 @@ namespace Budgetcontrol\Budget\Controller;
 
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Carbon;
-use Budgetcontrol\jobs\Domain\Model\Budget;
+use Budgetcontrol\Budget\Domain\Model\Budget;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 

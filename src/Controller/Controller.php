@@ -1,7 +1,7 @@
 <?php
 namespace Budgetcontrol\Budget\Controller;
 
-use Budgetcontrol\jobs\Domain\Model\Budget;
+use Budgetcontrol\Budget\Domain\Model\Budget;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;

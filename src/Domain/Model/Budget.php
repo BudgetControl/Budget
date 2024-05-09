@@ -1,5 +1,5 @@
 <?php
-namespace Budgetcontrol\jobs\Domain\Model;
+namespace Budgetcontrol\Budget\Domain\Model;
 
 use Budgetcontrol\Budget\Domain\Model\Labels;
 use Illuminate\Database\Eloquent\Model;
