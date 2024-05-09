@@ -20,11 +20,11 @@ final class BudgetTable extends AbstractMigration
     public function change(): void
     {
         if($this->hasTable('budgets')) {
-            $this->dropSchema('budgets');
+		$this->table('budgets')->drop()->save();
         }
 
         $table = $this->table('budgets', ['id' => false, 'primary_key' => 'uuid']);
-        $table->addColumn('uuid', 'uuid', ['unique' => true])
+        $table->addColumn('uuid', 'uuid', ['null' => false])
             ->addColumn('name', 'string')
             ->addColumn('amount', 'float', ['precision' => 10, 'scale' => 2])
             ->addColumn('configuration', 'json')
@@ -34,8 +34,9 @@ final class BudgetTable extends AbstractMigration
             ->addColumn('notification', 'boolean', ['default' => false])
             ->addColumn('workspace_id', 'uuid')
             ->addColumn('emails', 'text', ['null' => true])
-            ->addForeignKey('workspace_id', 'workspace', 'uuid', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
-            ->create();
+            ->addForeignKey('workspace_id', 'workspaces', 'uuid', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+	    ->addIndex(['uuid'], ['unique' => true])            
+	    ->create();
 
     }
 }
