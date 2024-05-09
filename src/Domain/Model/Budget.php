@@ -10,6 +10,7 @@ class Budget extends Model
     use SoftDeletes;
     
     const ONE_SHOT = 'one_shot';
+    const RECURSIVELY = 'recursively';
     const DAILY = 'daily';
     const WEEKLY = 'weekly';
     const MONTHLY = 'monthly';
@@ -32,15 +33,20 @@ class Budget extends Model
 
     public function setConfigurationAttribute($value)
     {
+        $this->attributes['configuration'] = json_encode($value);
+    }
+
+    public function getConfigurationAttribute($value)
+    {
         $this->attributes['configuration'] = json_decode($value);
     }
 
-    public function setConfigurationNotification($value)
+    public function setConfigurationEmails($value)
     {
-        $this->attributes['notification'] = (bool) $value;
+        $this->attributes['emails'] = implode(',',$value);
     }
 
-    public function setConfigurationEmails($value)
+    public function getConfigurationEmails($value)
     {
         $this->attributes['emails'] = explode(',',$value);
     }
