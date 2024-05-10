@@ -23,7 +23,7 @@ final class BudgetTable extends AbstractMigration
 		$this->table('budgets')->drop()->save();
         }
 
-        $table = $this->table('budgets', ['id' => false, 'primary_key' => 'uuid']);
+        $table = $this->table('budgets', ['id' => true, 'primary_key' => 'id']);
         $table->addColumn('uuid', 'uuid', ['null' => false])
             ->addColumn('name', 'string')
             ->addColumn('amount', 'float', ['precision' => 10, 'scale' => 2])

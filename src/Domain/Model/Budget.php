@@ -31,7 +31,6 @@ class Budget extends Model
         'updated_at',
     ];
 
-    protected $primaryKey = 'uuid';
 
     public function emails(): Attribute
     {
