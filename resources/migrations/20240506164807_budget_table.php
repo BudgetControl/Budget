@@ -26,6 +26,7 @@ final class BudgetTable extends AbstractMigration
         $table = $this->table('budgets', ['id' => true, 'primary_key' => 'id']);
         $table->addColumn('uuid', 'uuid', ['null' => false])
             ->addColumn('name', 'string')
+            ->addColumn('description', 'text')
             ->addColumn('amount', 'float', ['precision' => 10, 'scale' => 2])
             ->addColumn('configuration', 'json')
             ->addColumn('created_at', 'datetime')
