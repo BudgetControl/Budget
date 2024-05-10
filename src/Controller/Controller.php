@@ -13,13 +13,9 @@ abstract class Controller {
         $validator = Validator::make($request->getParsedBody(), [
             'name' => 'required|string',
             'amount' => 'required|numeric',
-            'configuration' => 'required|json',
-            'created_at' => 'required|date',
-            'updated_at' => 'required|date',
-            'deleted_at' => 'nullable|date',
+            'configuration' => 'required|array',
             'notification' => 'boolean',
-            'workspace_id' => 'required|uuid',
-            'emails' => 'nullable|string',
+            'emails' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -30,7 +26,7 @@ abstract class Controller {
 
         //validate emails field must a valid email
         if (isset($request->getParsedBody()['emails'])) {
-            $emails = explode(',', $request->getParsedBody()['emails']);
+            $emails = $request->getParsedBody()['emails'];
             foreach ($emails as $email) {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     Log::error('Validation failed.', ['emails' => 'Invalid email address']);
@@ -47,11 +43,11 @@ abstract class Controller {
     private function configurationFieldValidator(array $configuration)
     {
         $validator = Validator::make($configuration, [
-            'period' => 'required|string',
-            'categories' => 'required|string',
-            'accounts' => 'required|array',
-            'tags' => 'required|array',
-            'types' => 'required|array',
+            'period' => 'required|string|in:one_shot,monthly,weekly,daily,recursively',
+            'categories' => 'array',
+            'accounts' => 'array',
+            'tags' => 'array',
+            'types' => 'array',
         ]);
         
         //if period is one_shot check period_date

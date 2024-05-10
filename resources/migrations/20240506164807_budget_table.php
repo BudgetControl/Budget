@@ -32,10 +32,10 @@ final class BudgetTable extends AbstractMigration
             ->addColumn('updated_at', 'datetime')
             ->addColumn('deleted_at', 'datetime', ['null' => true])
             ->addColumn('notification', 'boolean', ['default' => false])
-            ->addColumn('workspace_id', 'uuid')
+            ->addColumn('workspace_id', 'biginteger', ['signed' => false])
             ->addColumn('emails', 'text', ['null' => true])
-            ->addForeignKey('workspace_id', 'workspaces', 'uuid', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
-	    ->addIndex(['uuid'], ['unique' => true])            
+            ->addForeignKey('workspace_id', 'workspaces', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+	    ->addIndex(['uuid'], ['unique' => true])
 	    ->create();
 
     }

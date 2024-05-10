@@ -4,6 +4,7 @@ namespace Budgetcontrol\Budget\Controller;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Carbon;
 use Budgetcontrol\Budget\Domain\Model\Budget;
+use Budgetcontrol\Budget\Domain\Repository\BudgetRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -85,9 +86,9 @@ class BudgetController extends Controller {
     {
         $this->validate($request);
 
-        $budget = Budget::find($args['uuid']);
+        $budget = Budget::where('uuid',$args['uuid'])->first();
 
-        if($budget->isEmpty()){
+        if($budget->count() == 0){
             return response(["Budget not found"], 404);
         }
 
@@ -134,17 +135,10 @@ class BudgetController extends Controller {
             return response(['message' => 'Budget not found'], 404);
         }
 
-        $budget = $budgets->first();
-        $configuration = json_decode($budget->configurations, true);
+        $stats = new BudgetRepository($arg['wsid']);
+        $budget = $stats->statsOfBudget($arg['uuid']);
 
-        $date_end = Carbon::createFromFormat('Y-m-d h:i:s', $configuration->period_end);
-        if($date_end < Carbon::now()->toAtomString()) {
-            return response(['expired' => true]);
-        }
-
-        $budget->save();
-
-        return response($budget->toArray());
+        return response(['expired' => $budget->isExpired()]);
     }
 
     /**
@@ -163,14 +157,11 @@ class BudgetController extends Controller {
             return response(['message' => 'Budget not found'], 404);
         }
 
-        $budget = $budgets->first();
-        if($budget->amount < $budget->balance) {
-            return response(['exceeded' => true]);
-        }
+        $stats = new BudgetRepository($arg['wsid']);
+        $budget = $stats->statsOfBudget($arg['uuid']);
 
-        $budget->save();
-
-        return response($budget->toArray());
+        return response(['exceeded' => $budget->isExeeded()]);
+        
     }
 
 }

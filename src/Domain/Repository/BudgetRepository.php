@@ -1,10 +1,18 @@
 <?php
 namespace Budgetcontrol\Budget\Domain\Repository;
 
+use Budgetcontrol\Budget\Domain\Entity\BudgetStats;
 use Budgetcontrol\Budget\Domain\Model\Budget;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class BudgetRepository extends Repository {
+
+    private int $workspaceId;
+
+    public function __construct(int $workspaceId)
+    {
+        $this->workspaceId = $workspaceId;
+    }
 
     /**
      * Finds and returns the budgets that have been exceeded.
@@ -13,7 +21,7 @@ class BudgetRepository extends Repository {
      */
     public function findExceededBudget()
     {
-        $query = "SELECT * FROM budgets where notification = 1 and deleted_at is null;";
+        $query = "SELECT * FROM budgets where notification = 1 and deleted_at is null and workspace_id = $this->workspaceId;";
         $results = DB::select($query);
 
         if(empty($results)) {
@@ -51,6 +59,52 @@ class BudgetRepository extends Repository {
     }
 
     /**
+     * Finds and returns the budgets that have been exceeded.
+     * @return array <BudgetStats> The budgets that have been exceeded.
+     */
+    public function statsOfBuddgets(): array
+    {
+        $budgets = Budget::where('workspace_id', $this->workspaceId)->where('deleted_at',null)->get();
+        $budgetsStats = [];
+        foreach($budgets as $budget) {
+
+            $stats = $this->budgetStats(
+                $budget
+            );
+
+            if($stats === null) {
+                continue;
+            }
+
+            $budgetsStats[] = new BudgetStats($stats->total, $budget);
+
+        }
+
+        return $budgetsStats;
+    }
+
+    /**
+     * Retrieves the statistics of a budget.
+     *
+     * @param string $budgetUuid The UUID of the budget.
+     * @return BudgetStats The statistics of the budget.
+     */
+    public function statsOfBudget(string $budgetUuid): ?BudgetStats
+    {
+        $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
+
+        $stats = $this->budgetStats(
+            $budget
+        );
+
+        if($stats === null) {
+            return null;
+        }
+
+        return new BudgetStats($stats->total, $budget);
+    }
+
+    /**
      * Calculates the statistics for a given budget.
      *
      * @param Budget $budget The budget for which to calculate the statistics.
@@ -60,36 +114,36 @@ class BudgetRepository extends Repository {
     {
         $configuration = $budget->configuration;
 
-        $account = $configuration?->account ?? null;
-        $type = $configuration?->type ?? null;
-        $tag = $configuration?->tags ?? null;
-        $category = $configuration?->category ?? null;
-        $period = $configuration?->period ?? null;
-        $endDate = $configuration?->end_date ?? null;
-        $startDate = $configuration?->start_date ?? null;
+        $accounts = $configuration['accounts'] ?? [];
+        $types = $configuration['types'] ?? [];
+        $tags = $configuration['tags'] ?? [];
+        $categories = $configuration['categories'] ?? [];
+        $period = $configuration['period'] ?? null;
+        $endDate = $configuration['end_date'] ?? null;
+        $startDate = $configuration['start_date'] ?? null;
 
-        $query = "SELECT sum(amount) as total FROM entries where deleted_at is null";
+        $query = "SELECT sum(amount) as total FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
-        if(!empty($account)) {
-            $account = implode(',', $account);
-            $query .= " and account_id in ($account)";
+        if(!empty($accounts)) {
+            $accounts = implode(',', $accounts);
+            $query .= " and account_id in ($accounts)";
         }
 
-        if($type == 'category') {
-            $category = implode(',', $category);
-            $query .= " and category_id in ($category)";
+        if(!empty($categories)) {
+            $categories = implode(',', $categories);
+            $query .= " and category_id in ($categories)";
         }
 
-        if(!empty($type)) {
-            foreach($type as $_ => $value) {
-                $types[] = "'$value'";
+        if(!empty($types)) {
+            foreach($types as $_ => $value) {
+                $typesOf[] = "'$value'";
             }
-            $types = implode(',', $types);
-            $query .= " and type in ($types)";
+            $typesOf = implode(',', $typesOf);
+            $query .= " and type in ($typesOf)";
         }
 
-        if(!empty($tag)) {
-            $tags = $this->entriesFromTags($tag);
+        if(!empty($tags)) {
+            $tags = $this->entriesFromTags($tags);
             $entries = array_map(function($entry) {
                 return $entry->id;
             }, $tags);

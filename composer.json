@@ -7,6 +7,10 @@
         "source": {
             "type": "vcs",
             "url": "https://github.com/mlabfactory/phpunit-self-api-integration.git"
+        },
+        "math-percentage": {
+            "type": "vcs",
+            "url": "git@github.com:mlabfactory/math-percentage.git"
         }
     },
     "require": {
@@ -27,7 +31,9 @@
         "illuminate/events": "^11.0",
         "symfony/property-access": "^7.0",
         "illuminate/filesystem": "^11.0",
-        "nesbot/carbon": "^3.2"
+        "nesbot/carbon": "^3.2",
+        "mlab/math-percentage": "^1.0",
+        "illuminate/validation": "^11.7"
     },
     "require-dev": {
         "nikic/php-parser": "^5.0",

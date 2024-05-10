@@ -4,6 +4,7 @@ namespace Budgetcontrol\Budget\Domain\Model;
 use Budgetcontrol\Budget\Domain\Model\Labels;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Budget extends Model
 {
@@ -28,27 +29,24 @@ class Budget extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
-        'id'
     ];
 
-    public function setConfigurationAttribute($value)
+    protected $primaryKey = 'uuid';
+
+    public function emails(): Attribute
     {
-        $this->attributes['configuration'] = json_encode($value);
+        return Attribute::make(
+            get: fn (string $value) => explode(',', $value),
+            set: fn (array $value) => implode(',', $value),
+        );
     }
 
-    public function getConfigurationAttribute($value)
+    public function configuration(): Attribute
     {
-        $this->attributes['configuration'] = json_decode($value);
-    }
-
-    public function setConfigurationEmails($value)
-    {
-        $this->attributes['emails'] = implode(',',$value);
-    }
-
-    public function getConfigurationEmails($value)
-    {
-        $this->attributes['emails'] = explode(',',$value);
+        return Attribute::make(
+            get: fn (string $value) => json_decode($value, true),
+            set: fn (array $value) => json_encode($value),
+        );
     }
     
 
