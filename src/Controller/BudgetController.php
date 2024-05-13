@@ -46,7 +46,7 @@ class BudgetController extends Controller {
             return response(["Budget not found"], 404);
         }
 
-        return response($budget->toArray(), 200);
+        return response($budget->toArray()[0], 200);
     }
 
     /**
