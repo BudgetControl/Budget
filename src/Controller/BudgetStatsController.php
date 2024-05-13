@@ -29,7 +29,7 @@ class BudgetStatsController extends Controller {
             }
 
             $results = [];
-            foreach($budgets as $budget) {
+            foreach($budgets as $budget) { 
                 $results[] = $budget->toArray();
             }
 

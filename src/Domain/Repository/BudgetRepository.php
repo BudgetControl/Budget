@@ -158,13 +158,13 @@ class BudgetRepository extends Repository {
         } else {
             switch($period) {
                 case Budget::DAILY:
-                    $query .= " and date_time = CURDATE()";
+                    $query .= " and date_time = CURDATE() and YEAR(date_time) = YEAR(CURDATE())";
                     break;
                 case Budget::WEEKLY:
-                    $query .= " and WEEK(date_time) = WEEK(CURDATE())";
+                    $query .= " and WEEK(date_time) = WEEK(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
                 case Budget::MONTHLY:
-                    $query .= " and MONTH(date_time) = MONTH(CURDATE())";
+                    $query .= " and MONTH(date_time) = MONTH(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
                 case Budget::YEARLY:
                     $query .= " and YEAR(date_time) = YEAR(CURDATE())";
