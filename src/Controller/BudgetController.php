@@ -4,12 +4,16 @@ namespace Budgetcontrol\Budget\Controller;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Carbon;
 use Budgetcontrol\Budget\Domain\Model\Budget;
-use Budgetcontrol\Budget\Domain\Repository\BudgetRepository;
+use Budgetcontrol\Budget\Traits\RequestFilters;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Budgetcontrol\Budget\Domain\Repository\BudgetRepository;
 
 class BudgetController extends Controller {
 
+    use RequestFilters;
+
+    protected $filters = ['name', 'budget', 'configuration', 'notification', 'emails', 'description'];
 
     /**
      * Handles the index action of the BudgetController.
@@ -21,13 +25,17 @@ class BudgetController extends Controller {
      */
     public function index(Request $request, Response $response, $args)
     {
-        $budgets = Budget::where('workspace_id', $args['wsid'])->get();
+        $budgets = Budget::where('workspace_id', $args['wsid']);
+        $filters = $this->extractFilters($request);
+        foreach ($filters as $key => $value) {
+            $budgets->where($key, $value);
+        }
 
-        if($budgets->isEmpty()){
+        if($budgets->count() === 0){
             return response([], 204);
         }
         
-        return response($budgets->toArray(), 200);
+        return response($budgets->get()->toArray(), 200);
     }
 
     /**
