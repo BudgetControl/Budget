@@ -119,8 +119,8 @@ class BudgetRepository extends Repository {
         $tags = $configuration['tags'] ?? [];
         $categories = $configuration['categories'] ?? [];
         $period = $configuration['period'] ?? null;
-        $endDate = $configuration['end_date'] ?? null;
-        $startDate = $configuration['start_date'] ?? null;
+        $endDate = $configuration['period_end'] ?? null;
+        $startDate = $configuration['period_start'] ?? null;
 
         $query = "SELECT sum(amount) as total FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
@@ -153,7 +153,7 @@ class BudgetRepository extends Repository {
             }
         }
 
-        if($period === Budget::ONE_SHOT) {
+        if($period === Budget::ONE_SHOT || $period === Budget::RECURSIVELY) {
             $query .= " and date_time between '$startDate' and '$endDate'";
         } else {
             switch($period) {
