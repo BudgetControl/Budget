@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Deploy application
 
 on:
   workflow_dispatch:
@@ -20,11 +20,24 @@ jobs:
         - name: deploy file
           uses: wlixcc/SFTP-Deploy-Action@v1.2.4
           with:
-              username: 'root'
-              server: 'app.budgetcontrol.cloud'
+              username: ${{ secrets.SFTP_USER }}
+              server: ${{ secrets.HOST }}
               ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
               password: ${{ secrets.SFTP_PASSWORD }} 
               local_path: '.'
               remote_path: '/var/www/budgetcontrol/Core/Microservices/Budget'
               sftpArgs: '-o ConnectTimeout=5'
+
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.SFTP_USER }}
+        password: ${{ secrets.SFTP_PASSWORD }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: docker-compose up -d
   

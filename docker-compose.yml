@@ -1,9 +1,9 @@
-version: '2.2'
+version: '3'
 
 services:
     bemodule:
-      container_name: budgetcontrol-ms-budget
-      image: mlabfactory/php8-apache:v1.0
+      container_name: budget.ms.budgetcontrol.cloud
+      image: mlabfactory/php8-fpm:v1.0
       volumes:
         - ./:/var/www/workdir
       networks:
@@ -12,5 +12,5 @@ services:
 
 networks:
   budgetcontrol_network:
-    external: false
+    external: true
     name: budgetcontrol_network
