@@ -8,9 +8,11 @@ on:
 permissions:
   contents: read
 
+
 jobs:
   deploy_job:
     runs-on: ubuntu-latest
+    environment: prod
     name: deploy
     steps:
         - name: Checkout
