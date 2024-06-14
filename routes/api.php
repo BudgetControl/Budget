@@ -3,6 +3,7 @@
 /**
  *  application apps
  */
+$app->get('/monitor', \Budgetcontrol\Budget\Controller\Controller::class . ':monitor');
 
 $app->get('/{wsid}', \Budgetcontrol\Budget\Controller\BudgetController::class . ':index');
 $app->get('/{wsid}/{uuid}', \Budgetcontrol\Budget\Controller\BudgetController::class . ':show');

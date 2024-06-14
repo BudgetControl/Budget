@@ -41,6 +41,7 @@ class BudgetController extends Controller {
     public function show(Request $request, Response $response, $args)
     {
         $budget = Budget::where('uuid', $args['uuid'])->where('workspace_id', $args['wsid'])->get();
+        $results = $budget->toArray()[0];
 
         if($budget->isEmpty()){
             return response(["Budget not found"], 404);
@@ -98,7 +99,7 @@ class BudgetController extends Controller {
         $budget->configuration = $request->getParsedBody()['configuration'];
         $budget->notification = $request->getParsedBody()['notification'];
         $budget->workspace_id = $args['wsid'];
-        $budget->emails = $request->getParsedBody()['emails'];
+        $budget->emails = empty($request->getParsedBody()['emails']) ? [] : $request->getParsedBody()['emails'];
         $budget->description = $request->getParsedBody()['description'];
         $budget->save();
 

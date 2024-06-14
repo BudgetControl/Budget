@@ -34,8 +34,15 @@ class Budget extends Model
 
     public function emails(): Attribute
     {
+        $attribute = function($value){
+            if(empty($value)){
+                return [];
+            }
+            return implode(',', $value);
+        };
+
         return Attribute::make(
-            get: fn (string $value) => explode(',', $value),
+            get: fn (string $value) => $attribute($value),
             set: fn (array $value) => implode(',', $value),
         );
     }
