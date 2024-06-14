@@ -1,10 +1,13 @@
 <?php
 namespace Budgetcontrol\Budget\Controller;
 
-use Budgetcontrol\Budget\Domain\Model\Budget;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use PDO;
+use PDOException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Budgetcontrol\Budget\Domain\Model\Budget;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class Controller {
 
@@ -60,6 +63,29 @@ abstract class Controller {
             Log::error('Validation failed.', $validator->errors()->toArray());
             throw new \Exception("Validation failed.");
         }
+    }
+
+    public function monitor(Request $request, Response $response)
+    {
+        $dbHost = env('DB_HOST');
+        $dbUser = env('DB_USER');
+        $dbPass = env('DB_PASS');
+        $dbName = env('DB_NAME');
+
+        // Assuming you are using PDO for database connection
+        try {
+            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbPass, $dbUser);
+        } catch (PDOException $e) {
+            // Connection failed
+            $response->getBody()->write('Database connection failed: ' . $e->getMessage());
+            return $response->withStatus(500);
+        }
+
+        return response([
+            'success' => true,
+            'message' => 'Budget service is up and running'
+        ]);
+        
     }
     
 }

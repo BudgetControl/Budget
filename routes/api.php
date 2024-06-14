@@ -15,3 +15,4 @@ $app->get('/{wsid}/budget/{uuid}/status', \Budgetcontrol\Budget\Controller\Budge
 $app->get('/{wsid}/budget/{uuid}/stats', \Budgetcontrol\Budget\Controller\BudgetStatsController::class . ':getStats');
 $app->get('/{wsid}/budgets/stats', \Budgetcontrol\Budget\Controller\BudgetStatsController::class . ':getAllStats');
 
+$app->get('/monitor', \Budgetcontrol\Budget\Controller\Controller::class . ':monitor');
