@@ -47,7 +47,7 @@ class BudgetRepository extends Repository {
                 continue;
             }
 
-            if($stats->total * -1 < $budget->budget) {
+            if($stats[0]->total * -1 < $budget->budget) {
                 continue;
             }
 
@@ -76,7 +76,7 @@ class BudgetRepository extends Repository {
                 continue;
             }
 
-            $budgetsStats[] = new BudgetStats($stats->total ?? 0, $budget);
+            $budgetsStats[] = new BudgetStats($stats[0]->total ?? 0, $budget);
 
         }
 
@@ -101,16 +101,19 @@ class BudgetRepository extends Repository {
             return null;
         }
 
-        return new BudgetStats($stats->total ?? 0, $budget);
+        return new BudgetStats($stats[0]->total ?? 0, $budget);
     }
 
     /**
-     * Calculates the statistics for a given budget.
+     * Calculate budget statistics.
      *
-     * @param Budget $budget The budget for which to calculate the statistics.
-     * @return object An array containing the calculated statistics.
+     * This method calculates the statistics for a given budget, such as the total amount spent.
+     *
+     * @param Budget $budget The budget object for which to calculate the statistics.
+     * @param string $select The select statement to use for calculating the statistics. Default is 'sum(amount) as total'.
+     * @return mixed The result of the statistics calculation.
      */
-    protected function budgetStats(Budget $budget)
+    protected function budgetStats(Budget $budget, string $select = 'sum(amount) as total')
     {
         $configuration = $budget->configuration;
 
@@ -122,7 +125,7 @@ class BudgetRepository extends Repository {
         $endDate = $configuration['period_end'] ?? null;
         $startDate = $configuration['period_start'] ?? null;
 
-        $query = "SELECT sum(amount) as total FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
+        $query = "SELECT $select FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
         if(!empty($accounts)) {
             $accounts = implode(',', $accounts);
@@ -148,6 +151,7 @@ class BudgetRepository extends Repository {
                 return $entry->id;
             }, $tags);
             $entries = implode(',', $entries);
+            $entries = str_replace(',,', ',', $entries); // workaround for empty entries
             if(!empty($entries)) {
                 $query .= " and id in ($entries)";
             }
@@ -178,8 +182,24 @@ class BudgetRepository extends Repository {
             return null;
         }
 
-        return $results[0];
+        return $results;
 
+    }
+
+
+    public function entriesOfBudget(string $budgetUuid): ?BudgetStats
+    {
+        $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
+
+        $stats = $this->budgetStats(
+            $budget
+        );
+
+        if($stats === null) {
+            return null;
+        }
+
+        return $stats;
     }
 
 }

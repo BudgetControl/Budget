@@ -36,4 +36,16 @@ class BudgetStatsController extends Controller {
             return response($results);
 
         }
+
+        public function getAllEntriesOfBudget($request, $response, $args)
+        {
+            $repository = new BudgetRepository($args['wsid']);
+            $entries = $repository->entriesOfBudget($args['budgetUuid']);
+
+            if(empty($entries)) {
+                return response(['No entries found'], 404);
+            }
+
+            return response($entries);
+        }
 }
