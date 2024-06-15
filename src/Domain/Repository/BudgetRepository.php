@@ -148,6 +148,7 @@ class BudgetRepository extends Repository {
                 return $entry->id;
             }, $tags);
             $entries = implode(',', $entries);
+            $entries = str_replace(',,','',$entries); // Work Around fixme:
             if(!empty($entries)) {
                 $query .= " and id in ($entries)";
             }
