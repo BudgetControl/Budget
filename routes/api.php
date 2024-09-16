@@ -15,4 +15,5 @@ $app->get('/{wsid}/budget/{uuid}/exceeded', \Budgetcontrol\Budget\Controller\Bud
 $app->get('/{wsid}/budget/{uuid}/status', \Budgetcontrol\Budget\Controller\BudgetController::class . ':status');
 $app->get('/{wsid}/budget/{uuid}/stats', \Budgetcontrol\Budget\Controller\BudgetStatsController::class . ':getStats');
 $app->get('/{wsid}/budgets/stats', \Budgetcontrol\Budget\Controller\BudgetStatsController::class . ':getAllStats');
+$app->get('/{wsid}/budget/{uuid}/entry-list', \Budgetcontrol\Budget\Controller\BudgetStatsController::class . ':getAllEntry');
 
