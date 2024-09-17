@@ -116,6 +116,10 @@ class BudgetRepository extends Repository {
     {
         $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
 
+        if(empty($budget)) {
+            return [];
+        }
+
         $entryList = $this->budgetEntryList($budget);
 
         foreach($entryList as $entry) {

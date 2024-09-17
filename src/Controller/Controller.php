@@ -49,7 +49,7 @@ class Controller {
         $validator = Validator::make($configuration, [
             'period' => 'required|string|in:' . implode(',', Period::periodList()),
             'categories' => 'array',
-            'accounts' => 'array',
+            'wallets' => 'array',
             'tags' => 'array',
             'types' => 'array',
         ]);
