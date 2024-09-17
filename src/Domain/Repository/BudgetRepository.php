@@ -126,7 +126,7 @@ class BudgetRepository extends Repository {
             return [];
         }
 
-        $list = Entry::WithRelations()->whereIn('id', $listId)->get();
+        $list = Entry::WithRelations()->whereIn('id', $listId)->orderBy('date_time', 'desc')->get();
 
         return $list;
     }
