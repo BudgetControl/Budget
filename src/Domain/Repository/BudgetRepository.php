@@ -3,7 +3,9 @@ namespace Budgetcontrol\Budget\Domain\Repository;
 
 use Budgetcontrol\Budget\Domain\Entity\BudgetStats;
 use Budgetcontrol\Budget\Domain\Model\Budget;
+use Budgetcontrol\Library\Model\Entry;
 use Illuminate\Database\Capsule\Manager as DB;
+use Webit\Wrapper\BcMath\BcMathNumber;
 
 class BudgetRepository extends Repository {
 
@@ -39,7 +41,7 @@ class BudgetRepository extends Repository {
                 'emails' => $budget->emails
             ]);
 
-            $stats = $this->budgetStats(
+            $stats = $this->budgetTotalSum(
                 $budget
             );
 
@@ -47,7 +49,7 @@ class BudgetRepository extends Repository {
                 continue;
             }
 
-            if($stats->total * -1 < $budget->budget) {
+            if($stats * -1 < $budget->budget) {
                 continue;
             }
 
@@ -68,7 +70,7 @@ class BudgetRepository extends Repository {
         $budgetsStats = [];
         foreach($budgets as $budget) {
 
-            $stats = $this->budgetStats(
+            $stats = $this->budgetTotalSum(
                 $budget
             );
 
@@ -93,7 +95,7 @@ class BudgetRepository extends Repository {
     {
         $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
 
-        $stats = $this->budgetStats(
+        $stats = $this->budgetTotalSum(
             $budget
         );
 
@@ -105,12 +107,37 @@ class BudgetRepository extends Repository {
     }
 
     /**
+     * Retrieves the entry list for a specific budget.
+     *
+     * @param string $budgetUuid The UUID of the budget.
+     * @return Entry The entry list for the budget.
+     */
+    public function enryList(string $budgetUuid)
+    {
+        $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
+
+        $entryList = $this->budgetEntryList($budget);
+
+        foreach($entryList as $entry) {
+            $listId[] = $entry->id;
+        }
+
+        if(empty($listId)) {
+            return [];
+        }
+
+        $list = Entry::WithRelations()->whereIn('id', $listId)->orderBy('date_time', 'desc')->get();
+
+        return $list;
+    }
+
+    /**
      * Calculates the statistics for a given budget.
      *
      * @param Budget $budget The budget for which to calculate the statistics.
      * @return object An array containing the calculated statistics.
      */
-    protected function budgetStats(Budget $budget)
+    protected function budgetEntryList(Budget $budget)
     {
         $configuration = $budget->configuration;
 
@@ -122,7 +149,7 @@ class BudgetRepository extends Repository {
         $endDate = $configuration['period_end'] ?? null;
         $startDate = $configuration['period_start'] ?? null;
 
-        $query = "SELECT sum(amount) as total FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
+        $query = "SELECT id, amount FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
         if(!empty($accounts)) {
             $accounts = implode(',', $accounts);
@@ -179,8 +206,26 @@ class BudgetRepository extends Repository {
             return null;
         }
 
-        return $results[0];
+        return $results;
 
+    }
+
+    /**
+     * Calculates the total sum of a budget.
+     *
+     * @param Budget $budget The budget object for which to calculate the total sum.
+     * @return float The total sum of the budget.
+     */
+    private function budgetTotalSum(Budget $budget): float
+    {
+        $entryList = $this->budgetEntryList($budget);
+
+        $sum = new BcMathNumber(0);
+        foreach($entryList as $entry) {
+            $sum = $sum->add($entry->amount);
+        }
+
+        return $sum->toFloat();
     }
 
 }

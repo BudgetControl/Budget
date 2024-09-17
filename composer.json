@@ -4,13 +4,29 @@
     "type": "none",
     "license": "MIT",
     "repositories": {
-        "source": {
-            "type": "vcs",
-            "url": "https://github.com/mlabfactory/phpunit-self-api-integration.git"
-        },
         "math-percentage": {
             "type": "vcs",
             "url": "git@github.com:mlabfactory/math-percentage.git"
+        },
+        "mlabfactory/phpunit-self-api-integration": {
+            "type": "vcs",
+            "url": "git@github.com:mlabfactory/phpunit-self-api-integration.git"
+        },
+        "budgetcontrol/library" : {
+            "type":"vcs",
+            "url":"https://github.com/BudgetControl/Library.git"
+        },
+        "budgetcontrol/cryptable" : {
+            "type":"vcs",
+            "url":"git@github.com:BudgetControl/LibsCryptable.git"
+        },
+        "budgetcontrol/seeds": {
+            "type":"vcs",
+            "url":"git@github.com:BudgetControl/SeedsTestLibs.git"
+        },
+        "source": {
+            "type":"vcs",
+            "url":"git@github.com:BudgetControl/Schema-Registry-Service.git"
         }
     },
     "require": {
@@ -33,13 +49,15 @@
         "nesbot/carbon": "^3.2",
         "mlab/math-percentage": "^1.0",
         "illuminate/validation": "^11.7",
-        "logtail/monolog-logtail": "^3.1"
+        "logtail/monolog-logtail": "^3.1",
+        "budgetcontrol/seeds": "^v0.1",
+        "budgetcontrol/library": "^v1.1"
     },
     "require-dev": {
         "nikic/php-parser": "^5.0",
         "fakerphp/faker": "^1.23",
         "phpunit/phpunit": "^10.0",
-        "mlabfactory/phpunit-self-api-integration": "dev-main"
+        "mlabfactory/phpunit-self-api-integration": "v1.1-beta"
     },
     "autoload": {
         "psr-4": {

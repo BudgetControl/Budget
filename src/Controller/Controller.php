@@ -9,7 +9,7 @@ use Budgetcontrol\Budget\Domain\Model\Budget;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-abstract class Controller {
+class Controller {
 
     protected function validate(Request $request)
     {
@@ -67,20 +67,6 @@ abstract class Controller {
 
     public function monitor(Request $request, Response $response)
     {
-        $dbHost = env('DB_HOST');
-        $dbUser = env('DB_USERNAME');
-        $dbPass = env('DB_PASSWORD');
-        $dbName = env('DB_DATABASE');
-
-        // Assuming you are using PDO for database connection
-        try {
-            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbPass, $dbUser);
-        } catch (PDOException $e) {
-            // Connection failed
-            $response->getBody()->write('Database connection failed: ' . $e->getMessage());
-            return $response->withStatus(500);
-        }
-
         return response([
             'success' => true,
             'message' => 'Budget service is up and running'
