@@ -78,7 +78,7 @@ class BudgetRepository extends Repository {
                 continue;
             }
 
-            $budgetsStats[] = new BudgetStats($stats->total ?? 0, $budget);
+            $budgetsStats[] = new BudgetStats($stats ?? 0, $budget);
 
         }
 
