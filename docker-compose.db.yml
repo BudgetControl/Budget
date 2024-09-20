@@ -3,7 +3,7 @@ version: '2.2'
 services:
     database:
       container_name: budgetcontrol-db
-      image: mysql:8.0.36-debian
+      image: mysql:5.7
       restart: unless-stopped
       ports:
         - "3336:3306"

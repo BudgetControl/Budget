@@ -3,14 +3,16 @@ version: '2.2'
 services:
     bemodule:
       container_name: budgetcontrol-ms-budget
-      image: mlabfactory/php8-apache:v1.0
+      image: mlabfactory/php8-apache:v1.2.1-xdebug
+      ports:
+        - "8084:80" # Change port do container
+      restart: unless-stopped
       volumes:
         - ./:/var/www/workdir
       networks:
         - budgetcontrol_network
-      restart: unless-stopped
 
 networks:
   budgetcontrol_network:
-    external: false
+    external: true
     name: budgetcontrol_network

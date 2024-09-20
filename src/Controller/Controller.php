@@ -6,6 +6,7 @@ use PDOException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Budgetcontrol\Budget\Domain\Model\Budget;
+use Budgetcontrol\Library\Definition\Period;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -46,9 +47,9 @@ class Controller {
     private function configurationFieldValidator(array $configuration)
     {
         $validator = Validator::make($configuration, [
-            'period' => 'required|string|in:one_shot,monthly,weekly,daily,recursively',
+            'period' => 'required|string|in:' . implode(',', Period::periodList()),
             'categories' => 'array',
-            'accounts' => 'array',
+            'wallets' => 'array',
             'tags' => 'array',
             'types' => 'array',
         ]);
