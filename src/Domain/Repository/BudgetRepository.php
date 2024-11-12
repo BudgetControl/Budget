@@ -37,7 +37,7 @@ class BudgetRepository extends Repository {
         foreach($results as $budget) {
             $budget = new Budget([
                 'uuid' => $budget->uuid,
-                'budget' => $budget->budget,
+                'budget' => $budget->amount,
                 'configuration' => $budget->configuration,
                 'notification' => $budget->notification,
                 'workspace_id' => $budget->workspace_id,
@@ -189,22 +189,22 @@ class BudgetRepository extends Repository {
             }
         }
 
-        if($period === Period::oneShot || $period === Period::recursively) {
+        if($period === Period::oneShot->value || $period === Period::recursively->value) {
             $start = $startDate->format('Y-m-d H:i:s');
             $end = $endDate->format('Y-m-d H:i:s');
             $query .= " and date_time between '$start' and '$end'";
         } else {
             switch($period) {
-                case Period::daily:
+                case Period::daily->value:
                     $query .= " and date_time = CURDATE() and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Period::weekly:
+                case Period::weekly->value:
                     $query .= " and WEEK(date_time) = WEEK(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Period::monthly:
+                case Period::monthly->value:
                     $query .= " and MONTH(date_time) = MONTH(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Period::yearly:
+                case Period::yearly->value:
                     $query .= " and YEAR(date_time) = YEAR(CURDATE())";
                     break;
             }
