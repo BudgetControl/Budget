@@ -93,7 +93,7 @@ class BudgetRepository extends Repository {
      */
     public function statsOfBudget(string $budgetUuid): ?BudgetStats
     {
-        $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
+        $budget = Budget::where('uuid', $budgetUuid)->first();
 
         $stats = $this->budgetTotalSum(
             $budget
@@ -103,7 +103,7 @@ class BudgetRepository extends Repository {
             return null;
         }
 
-        return new BudgetStats($stats->total ?? 0, $budget);
+        return new BudgetStats($stats ?? 0, $budget);
     }
 
     /**

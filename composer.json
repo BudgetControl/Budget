@@ -51,7 +51,7 @@
         "illuminate/validation": "^11.7",
         "logtail/monolog-logtail": "^3.1",
         "budgetcontrol/seeds": "^v0.1",
-        "budgetcontrol/library": "^v1.1"
+        "budgetcontrol/library": "^v1.3"
     },
     "require-dev": {
         "nikic/php-parser": "^5.0",
