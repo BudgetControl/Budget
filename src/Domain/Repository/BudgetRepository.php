@@ -37,7 +37,7 @@ class BudgetRepository extends Repository {
         foreach($results as $budget) {
             $budget = new Budget([
                 'uuid' => $budget->uuid,
-                'budget' => $budget->budget,
+                'budget' => $budget->amount,
                 'configuration' => $budget->configuration,
                 'notification' => $budget->notification,
                 'workspace_id' => $budget->workspace_id,

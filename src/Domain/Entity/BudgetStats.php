@@ -34,7 +34,7 @@ final class BudgetStats
     {
         $this->totalSpent = round($totalSpent, 2);
         $this->budget = $budget;
-        $this->total = $this->budget->amount;
+        $this->total = (float) $this->budget->amount;
         $this->totalRemaining = BigNumber::sum($this->total, $this->totalSpent)->toFloat();
 
         $spentPercentage = PercentCalculator::calculatePercentage(PercentCalculator::TOTAL_PERCENTAGE, $this->totalSpent * -1, $this->total)->toInt();
