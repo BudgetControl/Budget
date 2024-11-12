@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Budgetcontrol\Budget\Domain\Entity;
 
 use Brick\Math\BigNumber;
 use Illuminate\Support\Carbon;
 use Budgetcontrol\Budget\Traits\Serializer;
-use Budgetcontrol\Budget\Domain\Model\Budget;
 use Budgetcontrol\Library\Definition\Period;
 use Mlab\MathPercentage\Service\PercentCalculator;
+use Budgetcontrol\Library\Model\Budget;
 
 /**
  * Represents the statistics of a budget.
