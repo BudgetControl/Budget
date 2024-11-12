@@ -114,22 +114,22 @@ final class BudgetStats
         /** @var \Budgetcontrol\Library\ValueObject\BudgetConfiguration $configuration */
         $configuration = $this->budget->configuration;
         switch($configuration->getTypes()) {
-            case Period::oneShot:
+            case Period::oneShot->value:
                 $date_end = $configuration->getPeriodEnd()->format('Y-m-d H:i:s');
                 break;
-            case Period::daily:
+            case Period::daily->value:
                 $date_end = Carbon::now()->endOfDay();
                 break;
-            case Period::weekly:
+            case Period::weekly->value:
                 $date_end = Carbon::now()->lastWeekDay()->endOfDay();
                 break;
-            case Period::monthly:
+            case Period::monthly->value:
                 $date_end = Carbon::now()->lastOfMonth()->endOfDay();
                 break;
-            case Period::yearly:
+            case Period::yearly->value:
                 $date_end = Carbon::now()->lastOfYear()->endOfDay();
                 break;
-            case Period::recursively:
+            case Period::recursively->value:
                 $date_end = $configuration->getPeriodEnd()->format('Y-m-d H:i:s');
                 break;
             default:
