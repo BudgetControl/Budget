@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Budgetcontrol\Budget\Domain\Entity;
 
 use Brick\Math\BigNumber;
 use Illuminate\Support\Carbon;
 use Budgetcontrol\Budget\Traits\Serializer;
-use Budgetcontrol\Budget\Domain\Model\Budget;
+use Budgetcontrol\Library\Definition\Period;
 use Mlab\MathPercentage\Service\PercentCalculator;
+use Budgetcontrol\Library\Model\Budget;
 
 /**
  * Represents the statistics of a budget.
@@ -109,25 +111,26 @@ final class BudgetStats
 
     public function isExpired(): bool
     {   
+        /** @var \Budgetcontrol\Library\ValueObject\BudgetConfiguration $configuration */
         $configuration = $this->budget->configuration;
-        switch($configuration->period){
-            case Budget::ONE_SHOT:
-                $date_end = Carbon::createFromTimestamp(strtotime($configuration->period_end));
+        switch($configuration->getTypes()) {
+            case Period::oneShot:
+                $date_end = $configuration->getPeriodEnd()->format('Y-m-d H:i:s');
                 break;
-            case Budget::DAILY:
+            case Period::daily:
                 $date_end = Carbon::now()->endOfDay();
                 break;
-            case Budget::WEEKLY:
+            case Period::weekly:
                 $date_end = Carbon::now()->lastWeekDay()->endOfDay();
                 break;
-            case Budget::MONTHLY:
+            case Period::monthly:
                 $date_end = Carbon::now()->lastOfMonth()->endOfDay();
                 break;
-            case Budget::YEARLY:
+            case Period::yearly:
                 $date_end = Carbon::now()->lastOfYear()->endOfDay();
                 break;
-            case Budget::RECURSIVELY:
-                $date_end = Carbon::createFromTimestamp(strtotime($configuration->period_end));
+            case Period::recursively:
+                $date_end = $configuration->getPeriodEnd()->format('Y-m-d H:i:s');
                 break;
             default:
                 $date_end = Carbon::now()->lastOfMonth();

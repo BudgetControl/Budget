@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace Budgetcontrol\Budget\Domain\Repository;
 
 use Budgetcontrol\Budget\Domain\Entity\BudgetStats;
-use Budgetcontrol\Budget\Domain\Model\Budget;
+use Budgetcontrol\Library\Definition\Period;
 use Budgetcontrol\Library\Model\Entry;
+use Budgetcontrol\Library\Model\Budget;
 use Illuminate\Database\Capsule\Manager as DB;
 use Webit\Wrapper\BcMath\BcMathNumber;
 
@@ -93,7 +96,7 @@ class BudgetRepository extends Repository {
      */
     public function statsOfBudget(string $budgetUuid): ?BudgetStats
     {
-        $budget = Budget::where('uuid', $budgetUuid)->where('workspace_id', $this->workspaceId)->where('deleted_at',null)->first();
+        $budget = Budget::where('uuid', $budgetUuid)->first();
 
         $stats = $this->budgetTotalSum(
             $budget
@@ -103,7 +106,7 @@ class BudgetRepository extends Repository {
             return null;
         }
 
-        return new BudgetStats($stats->total ?? 0, $budget);
+        return new BudgetStats($stats ?? 0, $budget);
     }
 
     /**
@@ -143,15 +146,16 @@ class BudgetRepository extends Repository {
      */
     protected function budgetEntryList(Budget $budget)
     {
+        /** @var \Budgetcontrol\Library\ValueObject\BudgetConfiguration $configuration */
         $configuration = $budget->configuration;
 
-        $accounts = $configuration['accounts'] ?? [];
-        $types = $configuration['types'] ?? [];
-        $tags = $configuration['tags'] ?? [];
-        $categories = $configuration['categories'] ?? [];
-        $period = $configuration['period'] ?? null;
-        $endDate = $configuration['period_end'] ?? null;
-        $startDate = $configuration['period_start'] ?? null;
+        $accounts = $configuration->getAccounts();
+        $types = $configuration->getTypes();
+        $tags = $configuration->getTags();
+        $categories = $configuration->getCategories();
+        $period = $configuration->getPeriod();
+        $endDate = $configuration->getPeriodEnd();
+        $startDate = $configuration->getPeriodStart();
 
         $query = "SELECT id, amount FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
@@ -185,20 +189,22 @@ class BudgetRepository extends Repository {
             }
         }
 
-        if($period === Budget::ONE_SHOT || $period === Budget::RECURSIVELY) {
-            $query .= " and date_time between '$startDate' and '$endDate'";
+        if($period === Period::oneShot || $period === Period::recursively) {
+            $start = $startDate->format('Y-m-d H:i:s');
+            $end = $endDate->format('Y-m-d H:i:s');
+            $query .= " and date_time between '$start' and '$end'";
         } else {
             switch($period) {
-                case Budget::DAILY:
+                case Period::daily:
                     $query .= " and date_time = CURDATE() and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Budget::WEEKLY:
+                case Period::weekly:
                     $query .= " and WEEK(date_time) = WEEK(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Budget::MONTHLY:
+                case Period::monthly:
                     $query .= " and MONTH(date_time) = MONTH(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
                     break;
-                case Budget::YEARLY:
+                case Period::yearly:
                     $query .= " and YEAR(date_time) = YEAR(CURDATE())";
                     break;
             }

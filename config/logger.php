@@ -38,9 +38,12 @@ $logger = new \Monolog\Logger('MS-BUDGET');
 $logPath = env('APP_LOG_PATH',__DIR__.'/../storage/logs/log-'.date("Ymd").'.log');
 $streamHandler = new \Monolog\Handler\StreamHandler($logPath, $logLevel);
 
-$formatter = new \Monolog\Formatter\LineFormatter('[%channel%][%level_name%] %message% %context% %extra%\n');
+$formatter = new \Monolog\Formatter\LineFormatter("%datetime% > %level_name% > %message% %context% %extra%\n");
+$formatter->setJsonPrettyPrint(true);
+$formatter->includeStacktraces(true);
 $streamHandler->setFormatter($formatter);
 $logger->pushHandler($streamHandler);
+
 
 // log on Logtail only in prod
 if(env('APP_ENV') == 'prod') {
