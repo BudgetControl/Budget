@@ -2,7 +2,7 @@
 namespace Budgetcontrol\Budget\Domain\Model;
 
 use Budgetcontrol\Budget\Domain\Model\Labels;
-use Illuminate\Database\Eloquent\Model;
+use Budgetcontrol\Library\Model\Budget as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
@@ -16,6 +16,10 @@ class Budget extends Model
     const WEEKLY = 'weekly';
     const MONTHLY = 'monthly';
     const YEARLY = 'yearly';
+
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [
         'uuid',
