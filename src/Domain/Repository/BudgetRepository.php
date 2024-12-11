@@ -196,16 +196,16 @@ class BudgetRepository extends Repository {
         } else {
             switch($period) {
                 case Period::daily->value:
-                    $query .= " and date_time = CURDATE() and YEAR(date_time) = YEAR(CURDATE())";
+                    $query .= " and date_time::date = CURRENT_DATE";
                     break;
                 case Period::weekly->value:
-                    $query .= " and WEEK(date_time) = WEEK(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
+                    $query .= " and EXTRACT(WEEK FROM date_time) = EXTRACT(WEEK FROM CURRENT_DATE) and EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)";
                     break;
                 case Period::monthly->value:
-                    $query .= " and MONTH(date_time) = MONTH(CURDATE()) and YEAR(date_time) = YEAR(CURDATE())";
+                    $query .= " and EXTRACT(MONTH FROM date_time) = EXTRACT(MONTH FROM CURRENT_DATE) and EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)";
                     break;
                 case Period::yearly->value:
-                    $query .= " and YEAR(date_time) = YEAR(CURDATE())";
+                    $query .= " and EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)";
                     break;
             }
         }
