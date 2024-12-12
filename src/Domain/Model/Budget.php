@@ -1,14 +1,14 @@
 <?php
 namespace Budgetcontrol\Budget\Domain\Model;
 
-use Budgetcontrol\Budget\Domain\Model\Labels;
 use Budgetcontrol\Library\Model\Budget as Model;
+use BudgetcontrolLibs\Crypt\Traits\Crypt;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Budget extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Crypt;
     
     const ONE_SHOT = 'one_shot';
     const RECURSIVELY = 'recursively';
@@ -35,6 +35,12 @@ class Budget extends Model
         'updated_at',
     ];
 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->key = env('APP_KEY');
+    }
+
 
     public function emails(): Attribute
     {
@@ -42,19 +48,38 @@ class Budget extends Model
             if(empty($value)){
                 return [];
             }
-            return explode(',', $value);
+
+            if(is_null($value)){
+                return null;
+            }
+
+            $explodeValues = explode(',', $value);
+            foreach($explodeValues as $key => $email){
+                $explodeValues[$key] = $this->decrypt($email);
+            }
+
+            return $explodeValues;
         };
 
         $implode = function($value){
             if(empty($value)){
                 return [];
             }
+
+            if(is_null($value)){
+                return null;
+            }
+            
+            foreach($value as $key => $email){
+                $value[$key] = $this->encrypt($email);
+            }
+
             return implode(',', $value);
         };
 
         return Attribute::make(
-            get: fn (string $value) => $explode($value),
-            set: fn (array $value) => $implode($value),
+            get: fn (?string $value) => $explode($value),
+            set: fn (?array $value) => $implode($value),
         );
     }
 
