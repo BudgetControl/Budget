@@ -178,18 +178,26 @@ class BudgetRepository extends Repository {
         }
 
         if(!empty($tags)) {
-            $tags = $this->entriesFromTags($tags);
-            $entries = array_map(function($entry) {
-                return $entry->id;
-            }, $tags);
-            $entries = implode(',', $entries);
-            $entries = str_replace(',,','',$entries); // Work Around fixme:
-            if(!empty($entries)) {
-                $query .= " and id in ($entries)";
+            $tagEntries = $this->entriesFromTags($tags);
+            if (!empty($tagEntries)) {
+                $entryIds = array_map(function($entry) {
+                    return $entry->id;
+                }, $tagEntries);
+                
+                if (!empty($entryIds)) {
+                    $entriesStr = implode(',', $entryIds);
+                    $query .= " and id in ($entriesStr)";
+                } else {
+                    // No matching entries found for the tags, add a condition that will return no results
+                    $query .= " and 1=0";
+                }
+            } else {
+                // No matching entries found for the tags, add a condition that will return no results
+                $query .= " and 1=0";
             }
         }
 
-        if($period === Period::oneShot->value || $period === Period::recursively->value) {
+        if($period === Period::recursively->value) {
             $start = $startDate->format('Y-m-d H:i:s');
             $end = $endDate->format('Y-m-d H:i:s');
             $query .= " and date_time between '$start' and '$end'";
