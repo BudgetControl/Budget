@@ -1,0 +1,357 @@
+{
+  "service": {
+    "service": "budgetcontrol-ms-budget",
+    "serviceObject": {
+      "name": "budgetcontrol-ms-budget"
+    },
+    "provider": {
+      "name": "aws",
+      "region": "eu-west-1",
+      "runtime": "provided.al2",
+      "deploymentBucket": "serverless-framework-deployments-eu-west-1-41d5edce-535f",
+      "stage": "dev",
+      "versionFunctions": true,
+      "deploymentMethod": "direct",
+      "deploymentBucketObject": {
+        "name": "serverless-framework-deployments-eu-west-1-41d5edce-535f"
+      },
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "WebLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/budgetcontrol-ms-budget-dev-web"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "budgetcontrol-ms-budget",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/budgetcontrol-ms-budget-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/budgetcontrol-ms-budget-dev*:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "budgetcontrol-ms-budget",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-eu-west-1-41d5edce-535f",
+                "S3Key": "serverless/budgetcontrol-ms-budget/dev/1751636465351-2025-07-04T13:41:05.351Z/budgetcontrol-ms-budget.zip"
+              },
+              "Handler": "public/index.php",
+              "Runtime": "provided.al2",
+              "FunctionName": "budgetcontrol-ms-budget-dev-web",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                "arn:aws:lambda:eu-west-1:534081306603:layer:php-82-fpm:99"
+              ]
+            },
+            "DependsOn": [
+              "WebLogGroup"
+            ]
+          },
+          "WebLambdaVersionfcCtbgGqI8V5y7I9doLXDsLxaLkmem9jSkv2jdIg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebLambdaFunction"
+              },
+              "CodeSha256": "kXAEyB24uw/RqCQ2I+cfbBGI1FMyq3o15+qEmyY+lUM="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-budgetcontrol-ms-budget",
+              "ProtocolType": "HTTP"
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "WebLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationWeb": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"WebLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteDefault": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "$default",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationWeb"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationWeb"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-eu-west-1-41d5edce-535f",
+            "Export": {
+              "Name": "sls-budgetcontrol-ms-budget-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "WebLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebLambdaVersionfcCtbgGqI8V5y7I9doLXDsLxaLkmem9jSkv2jdIg"
+            },
+            "Export": {
+              "Name": "sls-budgetcontrol-ms-budget-dev-WebLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-budgetcontrol-ms-budget-dev-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-budgetcontrol-ms-budget-dev-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "plugins": [
+      "./vendor/bref/bref"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "web": {
+        "handler": "public/index.php",
+        "layers": {
+          "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"WebLambdaFunction\"][\"Properties\"][\"Layers\"]"
+        },
+        "events": [
+          {
+            "httpApi": "*",
+            "resolvedMethod": "ANY"
+          }
+        ],
+        "name": "budgetcontrol-ms-budget-dev-web",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "provided.al2",
+        "vpc": {},
+        "versionLogicalId": "WebLambdaVersionfcCtbgGqI8V5y7I9doLXDsLxaLkmem9jSkv2jdIg"
+      }
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless",
+    "initialServerlessConfig": {
+      "service": "budgetcontrol-ms-budget",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "package": {
+        "exclude": [
+          ".git/**",
+          ".idea/**",
+          "node_modules/**",
+          "tests/**",
+          "storage/logs/**",
+          ".env.*"
+        ],
+        "include": [
+          "public/**",
+          "vendor/**",
+          "bootstrap/**",
+          "storage/**"
+        ],
+        "artifactsS3KeyDirname": "serverless/budgetcontrol-ms-budget/dev/code-artifacts",
+        "deploymentBucket": "serverless-framework-deployments-eu-west-1-41d5edce-535f",
+        "artifact": "/Users/marco/Documents/Projects/marco/BudgetControl/microservices/Budget/.serverless/budgetcontrol-ms-budget.zip",
+        "artifactDirectoryName": "serverless/budgetcontrol-ms-budget/dev/1751636465351-2025-07-04T13:41:05.351Z"
+      }
+    },
+    "appId": null,
+    "orgId": null,
+    "layers": {},
+    "artifact": "/Users/marco/Documents/Projects/marco/BudgetControl/microservices/Budget/.serverless/budgetcontrol-ms-budget.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/budgetcontrol-ms-budget/dev/1751636465351-2025-07-04T13:41:05.351Z",
+    "artifact": "budgetcontrol-ms-budget.zip"
+  }
+}
