@@ -27,8 +27,10 @@ public_html/storage
 public_html/hot
 
 *.log
+.env.*
 
 ## IMAGES
 .jpeg
 .png
 .gif
+.serverless/*
