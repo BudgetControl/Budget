@@ -33,3 +33,4 @@ public_html/hot
 .jpeg
 .png
 .gif
+.serverless/*
