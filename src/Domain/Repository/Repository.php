@@ -34,12 +34,12 @@ class Repository {
     protected function entriesFromTags(array $tags): array
     {
         $query = "select entries.* from entries
-        right join entry_labels on entries.id = entry_labels.entry_id
-        right join labels on entry_labels.labels_id = labels.id
+        inner join entry_labels on entries.id = entry_labels.entry_id
+        inner join labels on entry_labels.labels_id = labels.id
         where labels.id in (".implode(',', $tags).") AND entries.deleted_at IS NULL;";
         $results = DB::select($query);
 
-        if(empty($results)) {
+        if(count($results) === 0) {
             return [];
         }
 
