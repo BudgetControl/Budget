@@ -27,7 +27,8 @@ class Budget extends Model
         'configuration',
         'notification',
         'workspace_id',
-        'emails'
+        'emails',
+        'thresholds'
     ];
 
     protected $hidden = [
@@ -48,38 +49,39 @@ class Budget extends Model
             if(empty($value)){
                 return [];
             }
-
             if(is_null($value)){
                 return null;
             }
-
             $explodeValues = explode(',', $value);
             foreach($explodeValues as $key => $email){
                 $explodeValues[$key] = $this->decrypt($email);
             }
-
-            return $explodeValues;
+            // Filtra solo email valide
+            return array_filter($explodeValues, fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL));
         };
-
         $implode = function($value){
             if(empty($value)){
                 return [];
             }
-
             if(is_null($value)){
                 return null;
             }
-            
             foreach($value as $key => $email){
                 $value[$key] = $this->encrypt($email);
             }
-
             return implode(',', $value);
         };
-
         return Attribute::make(
             get: fn (?string $value) => $explode($value),
             set: fn (?array $value) => $implode($value),
+        );
+    }
+
+    public function thresholds(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value ? json_decode($value, true) : [],
+            set: fn (?array $value) => json_encode($value),
         );
     }
 

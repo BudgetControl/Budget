@@ -59,17 +59,22 @@ class BudgetController extends Controller {
      */
     public function create(Request $request, Response $response, $args)
     {
-        $this->validate($request);
+        $data = $request->getParsedBody();
+        $errors = $this->validateBudget($data);
+        if (!empty($errors)) {
+            return response(['errors' => $errors], 422);
+        }
 
         $budget = new Budget();
         $budget->uuid = Uuid::uuid4();
-        $budget->name = $request->getParsedBody()['name'];
-        $budget->amount = $request->getParsedBody()['amount'];
-        $budget->configuration = $request->getParsedBody()['configuration'];
-        $budget->notification = $request->getParsedBody()['notification'];
+        $budget->name = $data['name'];
+        $budget->amount = $data['amount'];
+        $budget->configuration = $data['configuration'];
+        $budget->notification = $data['notification'];
         $budget->workspace_id = $args['wsid'];
-        $budget->emails = $request->getParsedBody()['emails'];
-        $budget->description = $request->getParsedBody()['description'];
+        $budget->emails = $data['emails'] ?? [];
+        $budget->thresholds = $data['thresholds'] ?? [];
+        $budget->description = $data['description'] ?? '';
         $budget->save();
 
         return response($budget->toArray(), 201);
@@ -85,24 +90,65 @@ class BudgetController extends Controller {
      */
     public function update(Request $request, Response $response, $args)
     {
-        $this->validate($request);
-
-        $budget = Budget::where('uuid',$args['uuid'])->first();
-
-        if($budget->count() == 0){
-            return response(["Budget not found"], 404);
+        $data = $request->getParsedBody();
+        $errors = $this->validateBudget($data);
+        if (!empty($errors)) {
+            return response(['errors' => $errors], 422);
         }
 
-        $budget->name = $request->getParsedBody()['name'];
-        $budget->amount = $request->getParsedBody()['amount'];
-        $budget->configuration = $request->getParsedBody()['configuration'];
-        $budget->notification = $request->getParsedBody()['notification'];
+        $budget = Budget::where('uuid',$args['uuid'])->first();
+        if(!$budget){
+            return response(["Budget not found"], 404);
+        }
+        $budget->name = $data['name'];
+        $budget->amount = $data['amount'];
+        $budget->configuration = $data['configuration'];
+        $budget->notification = $data['notification'];
         $budget->workspace_id = $args['wsid'];
-        $budget->emails = empty($request->getParsedBody()['emails']) ? [] : $request->getParsedBody()['emails'];
-        $budget->description = $request->getParsedBody()['description'];
+        $budget->emails = $data['emails'] ?? [];
+        $budget->thresholds = $data['thresholds'] ?? [];
+        $budget->description = $data['description'] ?? '';
         $budget->save();
 
         return response($budget->toArray(), 200);
+    /**
+     * Validazione campi emails e thresholds
+     */
+    private function validateBudget($data) {
+        $errors = [];
+        // Validazione thresholds
+        if (isset($data['thresholds'])) {
+            foreach ($data['thresholds'] as $t) {
+                if (!is_numeric($t) || $t < 1 || $t > 99) {
+                    $errors[] = "Le soglie devono essere numeri tra 1 e 99";
+                    break;
+                }
+            }
+        }
+        // Validazione emails
+        if (isset($data['emails'])) {
+            foreach ($data['emails'] as $email) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = "Email non valida: $email";
+                }
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * Logica di notifica: invia email se la percentuale supera una soglia
+     */
+    private function checkAndNotify(Budget $budget, $percentSpent) {
+        if (empty($budget->thresholds) || empty($budget->emails)) return;
+        foreach ($budget->thresholds as $threshold) {
+            if ($percentSpent >= $threshold) {
+                // Qui va la logica di invio email/notifica
+                // es: Mailer::send($budget->emails, "Budget superato $threshold%", ...);
+                // Logga o invia notifica
+            }
+        }
+    }
     }
 
     /**

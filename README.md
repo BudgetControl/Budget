@@ -44,6 +44,36 @@ You can use an fake mailhog server
 - docker run --rm -d --name mailhog -p 8025:8025 -p 1025:1025 mailhog/mailhog
 - docker network connect [network_name] mailhog
 
+## API
+
+### Budget API
+
+#### Creazione/aggiornamento budget
+
+Endpoint:
+```
+POST /{wsid}/budget
+PUT /{wsid}/budget/{uuid}
+```
+
+Body JSON:
+```
+{
+  "name": "Nome budget",
+  "amount": 1000,
+  "configuration": {...},
+  "notification": true,
+  "emails": ["utente1@email.com", "utente2@email.com"],
+  "thresholds": [50, 75, 90],
+  "description": "..."
+}
+```
+
+**emails**: array di indirizzi email validi che riceveranno notifiche.
+**thresholds**: array di percentuali (numeri tra 1 e 99) che attivano la notifica.
+
+La notifica viene inviata quando la percentuale di spesa supera una delle soglie specificate.
+
 ## Contributing
 
 Contributions are welcome! Please read our [Contribution Guidelines](CONTRIBUTING.md) for more information.
