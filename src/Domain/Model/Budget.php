@@ -27,7 +27,8 @@ class Budget extends Model
         'configuration',
         'notification',
         'workspace_id',
-        'emails'
+        'emails',
+        'thresholds'
     ];
 
     protected $hidden = [
@@ -88,6 +89,38 @@ class Budget extends Model
         return Attribute::make(
             get: fn (string $value) => json_decode($value, true),
             set: fn (array $value) => json_encode($value),
+        );
+    }
+
+    public function thresholds(): Attribute
+    {
+        $explode = function($value){
+            if(empty($value)){
+                return [];
+            }
+
+            if(is_null($value)){
+                return null;
+            }
+
+            return array_map('intval', explode(',', $value));
+        };
+
+        $implode = function($value){
+            if(empty($value)){
+                return [];
+            }
+
+            if(is_null($value)){
+                return null;
+            }
+            
+            return implode(',', $value);
+        };
+
+        return Attribute::make(
+            get: fn (?string $value) => $explode($value),
+            set: fn (?array $value) => $implode($value),
         );
     }
     

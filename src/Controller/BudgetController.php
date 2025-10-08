@@ -68,7 +68,8 @@ class BudgetController extends Controller {
         $budget->configuration = $request->getParsedBody()['configuration'];
         $budget->notification = $request->getParsedBody()['notification'];
         $budget->workspace_id = $args['wsid'];
-        $budget->emails = $request->getParsedBody()['emails'];
+        $budget->emails = $request->getParsedBody()['emails'] ?? [];
+        $budget->thresholds = $request->getParsedBody()['thresholds'] ?? [];
         $budget->description = $request->getParsedBody()['description'];
         $budget->save();
 
@@ -99,6 +100,7 @@ class BudgetController extends Controller {
         $budget->notification = $request->getParsedBody()['notification'];
         $budget->workspace_id = $args['wsid'];
         $budget->emails = empty($request->getParsedBody()['emails']) ? [] : $request->getParsedBody()['emails'];
+        $budget->thresholds = empty($request->getParsedBody()['thresholds']) ? [] : $request->getParsedBody()['thresholds'];
         $budget->description = $request->getParsedBody()['description'];
         $budget->save();
 

@@ -35,6 +35,7 @@ final class BudgetTable extends AbstractMigration
             ->addColumn('notification', 'boolean', ['default' => false])
             ->addColumn('workspace_id', 'biginteger', ['signed' => false])
             ->addColumn('emails', 'text', ['null' => true])
+            ->addColumn('thresholds', 'text', ['null' => true])
             ->addForeignKey('workspace_id', 'workspaces', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
 	    ->addIndex(['uuid'], ['unique' => true])
 	    ->create();

@@ -41,7 +41,8 @@ class BudgetRepository extends Repository {
                 'configuration' => $budget->configuration,
                 'notification' => $budget->notification,
                 'workspace_id' => $budget->workspace_id,
-                'emails' => $budget->emails
+                'emails' => $budget->emails,
+                'thresholds' => $budget->thresholds
             ]);
 
             $stats = $this->budgetTotalSum(

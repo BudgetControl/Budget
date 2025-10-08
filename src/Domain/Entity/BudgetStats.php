@@ -23,6 +23,7 @@ final class BudgetStats
     private string $totalSpentPercentage;
     private string $totalRemainingPercentage;
     private readonly Budget $budget;
+    private int $totalSpentPercentageInt;
 
     /**
      * Constructs a new BudgetStats instance.
@@ -38,6 +39,7 @@ final class BudgetStats
         $this->totalRemaining = BigNumber::sum($this->total, $this->totalSpent)->toFloat();
 
         $spentPercentage = PercentCalculator::calculatePercentage(PercentCalculator::TOTAL_PERCENTAGE, $this->totalSpent * -1, $this->total)->toInt();
+        $this->totalSpentPercentageInt = $spentPercentage;
         $this->totalSpentPercentage = "$spentPercentage%";
 
         $totalRemainingPercentage = 100 - $spentPercentage;
@@ -140,5 +142,38 @@ final class BudgetStats
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks if any threshold has been exceeded based on the current spending percentage.
+     *
+     * @return array Array of exceeded thresholds
+     */
+    public function getExceededThresholds(): array
+    {
+        $thresholds = $this->budget->thresholds;
+        
+        if (empty($thresholds) || !is_array($thresholds)) {
+            return [];
+        }
+
+        $exceededThresholds = [];
+        foreach ($thresholds as $threshold) {
+            if ($this->totalSpentPercentageInt >= $threshold) {
+                $exceededThresholds[] = $threshold;
+            }
+        }
+
+        return $exceededThresholds;
+    }
+
+    /**
+     * Gets the current spending percentage as an integer.
+     *
+     * @return int The spending percentage
+     */
+    public function getTotalSpentPercentageInt(): int
+    {
+        return $this->totalSpentPercentageInt;
     }
 }
