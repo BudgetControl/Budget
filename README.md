@@ -2,6 +2,16 @@
 
 This repository contains the code of microservice budgetcontrol template.
 
+## Features
+
+- **Budget Management**: Create, update, and delete budgets with flexible configuration
+- **Threshold Notifications**: Set percentage-based thresholds (1-99%) that trigger email notifications when spending exceeds them
+- **Email Alerts**: Configure multiple email recipients for budget notifications
+- **Budget Statistics**: Track spending, remaining amounts, and percentages
+- **Budget Validation**: Comprehensive validation for emails, thresholds, and budget parameters
+
+For detailed API documentation, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
+
 ## Prerequisites
 
 - Docker: [Install Docker](https://docs.docker.com/get-docker/)
