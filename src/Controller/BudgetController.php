@@ -168,4 +168,24 @@ class BudgetController extends Controller {
         
     }
 
+    /**
+     * Check thresholds for all budgets in workspace and send notifications
+     *
+     * @param Request $request The HTTP request object.
+     * @param Response $response The HTTP response object.
+     * @param array $args The route parameters.
+     * @return Response The HTTP response object.
+     */
+    public function checkThresholds(Request $request, Response $response, $args)
+    {
+        $repository = new BudgetRepository($args['wsid']);
+        $results = $repository->checkThresholdsAndNotify();
+
+        return response([
+            'checked' => true,
+            'notifications_sent' => count($results),
+            'details' => $results
+        ], 200);
+    }
+
 }

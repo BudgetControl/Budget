@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Budgetcontrol\Budget\Domain\Repository;
 
 use Budgetcontrol\Budget\Domain\Entity\BudgetStats;
+use Budgetcontrol\Budget\Service\BudgetThresholdNotificationService;
 use Budgetcontrol\Library\Definition\Period;
 use Budgetcontrol\Library\Model\Entry;
 use Budgetcontrol\Library\Model\Budget;
@@ -87,6 +88,40 @@ class BudgetRepository extends Repository {
         }
 
         return $budgetsStats;
+    }
+
+    /**
+     * Check all budgets for threshold violations and send notifications
+     *
+     * @return array Array of budgets with their notified thresholds
+     */
+    public function checkThresholdsAndNotify(): array
+    {
+        $budgetStats = $this->statsOfBuddgets();
+        $notificationService = new BudgetThresholdNotificationService();
+        $results = [];
+
+        foreach ($budgetStats as $stats) {
+            $budget = $stats->getBudget();
+            
+            // Only check if notifications are enabled
+            if (!$budget->notification) {
+                continue;
+            }
+
+            $notifiedThresholds = $notificationService->checkAndNotify($stats);
+            
+            if (!empty($notifiedThresholds)) {
+                $results[] = [
+                    'budget_uuid' => $budget->uuid,
+                    'budget_name' => $budget->name,
+                    'notified_thresholds' => $notifiedThresholds,
+                    'current_percentage' => $stats->getTotalSpentPercentageInt(),
+                ];
+            }
+        }
+
+        return $results;
     }
 
     /**
