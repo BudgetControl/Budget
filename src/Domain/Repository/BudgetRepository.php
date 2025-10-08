@@ -156,6 +156,9 @@ class BudgetRepository extends Repository {
         $period = $configuration->getPeriod();
         $endDate = $configuration->getPeriodEnd();
         $startDate = $configuration->getPeriodStart();
+        // Get include_planned from configuration array, default to true for backward compatibility
+        $configArray = is_array($budget->configuration) ? $budget->configuration : json_decode(json_encode($budget->configuration), true);
+        $includePlanned = $configArray['include_planned'] ?? true;
 
         $query = "SELECT id, amount FROM entries where deleted_at is null and workspace_id = $this->workspaceId";
 
@@ -216,6 +219,11 @@ class BudgetRepository extends Repository {
                     $query .= " and EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)";
                     break;
             }
+        }
+
+        // Filter planned entries based on budget configuration
+        if(!$includePlanned) {
+            $query .= " and (planned = 0 OR planned IS NULL)";
         }
 
         $results = DB::select($query);

@@ -52,6 +52,7 @@ class Controller {
             'wallets' => 'array',
             'tags' => 'array',
             'types' => 'array',
+            'include_planned' => 'boolean',
         ]);
         
         //if period is one_shot check period_date
