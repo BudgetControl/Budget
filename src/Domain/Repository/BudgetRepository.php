@@ -98,6 +98,10 @@ class BudgetRepository extends Repository {
     {
         $budget = Budget::where('uuid', $budgetUuid)->first();
 
+        if($budget === null) {
+            return null;
+        }
+
         $stats = $this->budgetTotalSum(
             $budget
         );
