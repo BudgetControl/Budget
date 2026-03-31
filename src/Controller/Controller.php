@@ -20,6 +20,8 @@ class Controller {
             'configuration' => 'required|array',
             'notification' => 'boolean',
             'emails' => 'nullable|array',
+            'planned_entries' => 'nullable|array',
+            'thresholds' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -34,6 +36,18 @@ class Controller {
             foreach ($emails as $email) {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     Log::error('Validation failed.', ['emails' => 'Invalid email address']);
+                    throw new \Exception("Validation failed.");
+                }
+            }
+        }
+
+        // validate thresholds field: each value must be an integer between 1 and 99
+        if (isset($request->getParsedBody()['thresholds'])) {
+            $thresholds = $request->getParsedBody()['thresholds'];
+            foreach ($thresholds as $threshold) {
+                $intValue = filter_var($threshold, FILTER_VALIDATE_INT);
+                if ($intValue === false || $intValue < 1 || $intValue > 99) {
+                    Log::error('Validation failed.', ['thresholds' => 'Each threshold must be a percentage between 1 and 99']);
                     throw new \Exception("Validation failed.");
                 }
             }

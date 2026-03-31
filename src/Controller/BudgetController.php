@@ -70,6 +70,8 @@ class BudgetController extends Controller {
         $budget->workspace_id = $args['wsid'];
         $budget->emails = $request->getParsedBody()['emails'];
         $budget->description = $request->getParsedBody()['description'];
+        $budget->planned_entries = $request->getParsedBody()['planned_entries'] ?? [];
+        $budget->thresholds = $request->getParsedBody()['thresholds'] ?? [];
         $budget->save();
 
         return response($budget->toArray(), 201);
@@ -100,6 +102,8 @@ class BudgetController extends Controller {
         $budget->workspace_id = $args['wsid'];
         $budget->emails = empty($request->getParsedBody()['emails']) ? [] : $request->getParsedBody()['emails'];
         $budget->description = $request->getParsedBody()['description'];
+        $budget->planned_entries = empty($request->getParsedBody()['planned_entries']) ? [] : $request->getParsedBody()['planned_entries'];
+        $budget->thresholds = empty($request->getParsedBody()['thresholds']) ? [] : $request->getParsedBody()['thresholds'];
         $budget->save();
 
         return response($budget->toArray(), 200);
