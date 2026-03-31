@@ -27,7 +27,9 @@ class Budget extends Model
         'configuration',
         'notification',
         'workspace_id',
-        'emails'
+        'emails',
+        'planned_entries',
+        'thresholds',
     ];
 
     protected $hidden = [
@@ -88,6 +90,22 @@ class Budget extends Model
         return Attribute::make(
             get: fn (string $value) => json_decode($value, true),
             set: fn (array $value) => json_encode($value),
+        );
+    }
+
+    public function plannedEntries(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value ? json_decode($value, true) : [],
+            set: fn (?array $value) => $value ? json_encode($value) : null,
+        );
+    }
+
+    public function thresholds(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value ? json_decode($value, true) : [],
+            set: fn (?array $value) => $value ? json_encode($value) : null,
         );
     }
     
